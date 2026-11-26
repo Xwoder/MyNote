@@ -56,9 +56,10 @@ sequenceDiagram
     rect rgb(255, 248, 235)
         Note over A,C: 4. 返回授权码
 
+        A-->>C: 重定向到 redirect_uri
+        Note right of C: code=AUTH_CODE
         rect rgb(255, 220, 140)
-            A-->>C: 重定向到 redirect_uri
-            Note right of C: code=AUTH_CODE<br/>state=原始随机值
+            Note right of C: state=原始随机值
         end
     end
 
