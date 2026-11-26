@@ -17,8 +17,10 @@ sequenceDiagram
             C->>C: 保存 state
         end
 
-        C->>C: 生成随机 nonce
-        C->>C: 保存 nonce
+        rect rgb(220, 200, 245)
+            C->>C: 生成随机 nonce
+            C->>C: 保存 nonce
+        end
 
         C->>C: 生成随机 code_verifier
         C->>C: 计算 code_challenge = BASE64URL(SHA256(code_verifier))
@@ -36,11 +38,17 @@ sequenceDiagram
         rect rgb(255, 220, 140)
             Note right of A: state
         end
-        Note right of A: nonce
+        rect rgb(220, 200, 245)
+            Note right of A: nonce
+        end
         Note right of A: code_challenge
         Note right of A: code_challenge_method=S256
 
-        A->>A: 保存 code_challenge<br/>并记录 nonce 用于签发 ID Token<br/>并与授权请求关联
+        A->>A: 保存 code_challenge
+        rect rgb(220, 200, 245)
+            A->>A: 记录 nonce 用于签发 ID Token
+        end
+        A->>A: 与授权请求关联
     end
 
     rect rgb(235, 255, 240)
@@ -86,14 +94,20 @@ sequenceDiagram
         A->>A: 与此前保存的 code_challenge 比较
 
         alt PKCE 验证通过
-            A->>A: 验证授权码并签发 Token<br/>ID Token 中写入 nonce
-            A-->>C: Access Token<br/>Refresh Token<br/>ID Token（含 nonce）
+            A->>A: 验证授权码并签发 Token
+            rect rgb(220, 200, 245)
+                A->>A: ID Token 中写入 nonce
+            end
+            A-->>C: Access Token<br/>Refresh Token
+            rect rgb(220, 200, 245)
+                A-->>C: ID Token（含 nonce）
+            end
         else PKCE 验证失败
             A-->>C: 拒绝 Token 请求
         end
     end
 
-    rect rgb(255, 248, 235)
+    rect rgb(220, 200, 245)
         Note over C: 7. 验证 nonce
 
         C->>C: 读取 ID Token 中的 nonce
