@@ -15,6 +15,9 @@ sequenceDiagram
         C->>C: 生成随机 state
         C->>C: 保存 state
 
+        C->>C: 生成随机 nonce
+        C->>C: 保存 nonce
+
         C->>C: 生成随机 code_verifier
         C->>C: 计算 code_challenge = BASE64URL(SHA256(code_verifier))
         C->>C: 保存 code_verifier
@@ -24,9 +27,9 @@ sequenceDiagram
         Note over C,A: 2. 发起授权请求
 
         C->>A: Authorization Request
-        Note right of A: client_id<br/>response_type=code<br/>redirect_uri<br/>scope<br/>state<br/>code_challenge<br/>code_challenge_method=S256
+        Note right of A: client_id<br/>response_type=code<br/>redirect_uri<br/>scope<br/>state<br/>nonce<br/>code_challenge<br/>code_challenge_method=S256
 
-        A->>A: 保存 code_challenge<br/>并与授权请求关联
+        A->>A: 保存 code_challenge<br/>并记录 nonce 用于签发 ID Token<br/>并与授权请求关联
     end
 
     rect rgb(235, 255, 240)
@@ -69,15 +72,29 @@ sequenceDiagram
         A->>A: 与此前保存的 code_challenge 比较
 
         alt PKCE 验证通过
-            A->>A: 验证授权码并签发 Token
-            A-->>C: Access Token<br/>Refresh Token
+            A->>A: 验证授权码并签发 Token<br/>ID Token 中写入 nonce
+            A-->>C: Access Token<br/>Refresh Token<br/>ID Token（含 nonce）
         else PKCE 验证失败
             A-->>C: 拒绝 Token 请求
         end
     end
 
+    rect rgb(255, 248, 235)
+        Note over C: 7. 验证 nonce
+
+        C->>C: 读取 ID Token 中的 nonce
+        C->>C: 与保存的 nonce 比较
+
+        alt nonce 一致
+            C->>C: 验证通过
+            C->>C: 删除已使用的 nonce
+        else nonce 不一致
+            C-->>U: 拒绝本次登录
+        end
+    end
+
     rect rgb(235, 255, 240)
-        Note over C,R: 7. 访问受保护资源
+        Note over C,R: 8. 访问受保护资源
 
         C->>R: 请求资源（携带 Access Token）
         R->>R: 验证 Access Token
