@@ -22,9 +22,11 @@ sequenceDiagram
             C->>C: 保存 nonce
         end
 
-        C->>C: 生成随机 code_verifier
-        C->>C: 计算 code_challenge = BASE64URL(SHA256(code_verifier))
-        C->>C: 保存 code_verifier
+        rect rgb(180, 220, 230)
+            C->>C: 生成随机 code_verifier
+            C->>C: 计算 code_challenge = BASE64URL(SHA256(code_verifier))
+            C->>C: 保存 code_verifier
+        end
     end
 
     rect rgb(245, 245, 245)
@@ -41,10 +43,14 @@ sequenceDiagram
         rect rgb(220, 200, 245)
             Note right of A: nonce
         end
-        Note right of A: code_challenge
-        Note right of A: code_challenge_method=S256
+        rect rgb(180, 220, 230)
+            Note right of A: code_challenge
+            Note right of A: code_challenge_method=S256
+        end
 
-        A->>A: 保存 code_challenge
+        rect rgb(180, 220, 230)
+            A->>A: 保存 code_challenge
+        end
         rect rgb(220, 200, 245)
             A->>A: 记录 nonce 用于签发 ID Token
         end
@@ -88,10 +94,12 @@ sequenceDiagram
     rect rgb(235, 245, 255)
         Note over C,A: 6. 使用授权码换取 Token（PKCE）
 
-        C->>A: Token Request<br/>code + code_verifier
+        rect rgb(180, 220, 230)
+            C->>A: Token Request<br/>code + code_verifier
 
-        A->>A: 根据 code_verifier<br/>计算 code_challenge
-        A->>A: 与此前保存的 code_challenge 比较
+            A->>A: 根据 code_verifier<br/>计算 code_challenge
+            A->>A: 与此前保存的 code_challenge 比较
+        end
 
         alt PKCE 验证通过
             A->>A: 验证授权码并签发 Token
