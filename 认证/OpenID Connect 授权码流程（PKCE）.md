@@ -12,8 +12,10 @@ sequenceDiagram
     rect rgb(235, 245, 255)
         Note over C: 1. 生成安全参数
 
-        C->>C: 生成随机 state
-        C->>C: 保存 state
+        rect rgb(255, 220, 140)
+            C->>C: 生成随机 state
+            C->>C: 保存 state
+        end
 
         C->>C: 生成随机 nonce
         C->>C: 保存 nonce
@@ -27,7 +29,16 @@ sequenceDiagram
         Note over C,A: 2. 发起授权请求
 
         C->>A: Authorization Request
-        Note right of A: client_id<br/>response_type=code<br/>redirect_uri<br/>scope<br/>state<br/>nonce<br/>code_challenge<br/>code_challenge_method=S256
+        Note right of A: client_id
+        Note right of A: response_type=code
+        Note right of A: redirect_uri
+        Note right of A: scope
+        rect rgb(255, 220, 140)
+            Note right of A: state
+        end
+        Note right of A: nonce
+        Note right of A: code_challenge
+        Note right of A: code_challenge_method=S256
 
         A->>A: 保存 code_challenge<br/>并记录 nonce 用于签发 ID Token<br/>并与授权请求关联
     end
@@ -45,11 +56,13 @@ sequenceDiagram
     rect rgb(255, 248, 235)
         Note over A,C: 4. 返回授权码
 
-        A-->>C: 重定向到 redirect_uri
-        Note right of C: code=AUTH_CODE<br/>state=原始随机值
+        rect rgb(255, 220, 140)
+            A-->>C: 重定向到 redirect_uri
+            Note right of C: code=AUTH_CODE<br/>state=原始随机值
+        end
     end
 
-    rect rgb(255, 240, 240)
+    rect rgb(255, 220, 140)
         Note over C: 5. 验证 state
 
         C->>C: 读取返回的 state
